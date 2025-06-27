@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:social_flutter/features/auth/bloc/auth_bloc.dart';
+import 'package:social_flutter/screens/home_screen.dart';
 import 'package:social_flutter/screens/login_screen.dart';
 import 'package:social_flutter/screens/register_screen.dart';
 
@@ -18,12 +19,13 @@ class RouteName {
 }
 
 final router = GoRouter(
-
+  // run when try to redirect to another route
+  // return null means user can access to the next route, else redirect to route login
   redirect: (context, state) {
     if (RouteName.publicRoutes.contains(state.fullPath)) {
       return null;
     }
-    if (context.read<AuthBloc>().state is AuthAuthenticateSuccess) {
+    if (context.read<AuthBloc>().state is AuthAuthenticateSuccess) { // check if current sate is AuthAuthenticateSuccess
       return null;
     }
 
@@ -32,7 +34,7 @@ final router = GoRouter(
   routes: [
     GoRoute(
       path: RouteName.home,
-      builder: (context, state) => LoginScreen(),
+      builder: (context, state) => HomeScreen(),
     ),
     GoRoute(
       path: RouteName.login,

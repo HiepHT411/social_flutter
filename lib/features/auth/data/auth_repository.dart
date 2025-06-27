@@ -16,7 +16,7 @@ class AuthRepository {
     try {
       log("Start logging in");
       final authenticationResult = await authApiClient.login(LoginDTO(username, password));
-      log("Successfully retrieve access token ${authenticationResult.accessToken}");
+      log("Successfully retrieve access token");
       if (authenticationResult.code != 200) {
         return Failure(authenticationResult.responseMessage);
       }
@@ -44,6 +44,9 @@ class AuthRepository {
   Future<Result<String?>> getAccessToken() async {
     try {
       final token = await authLocalDataSource.getAccessToken();
+      if (token == null) {
+        return Success(null);
+      }
       return Success(token);
     } catch (e) {
       log('Exception $e');

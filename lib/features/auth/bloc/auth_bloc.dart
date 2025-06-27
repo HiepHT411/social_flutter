@@ -30,13 +30,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     await Future.delayed(const Duration(seconds: 1));
     log('Auth blog handle AuthLoginStarted');
     final result = await authRepository.login(username: event.username, password: event.password);
-
-    switch (result) {
-      case Success():
-        emit(AuthLogInSuccess());
-      case Failure():
-        emit(AuthLoginFailure(result.message));
-    }
+    return (switch (result) {
+      Success() => emit(AuthLogInSuccess()),
+      Failure() => emit(AuthLoginFailure(result.message))
+    });
   }
 
   void _onRegisterStarted(AuthRegisterStarted event, Emitter<AuthState> emit) async {
@@ -58,6 +55,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   void _onAuthenticateStarted(
       AuthAuthenticateStarted event, Emitter<AuthState> emit) async {
     final result = await authRepository.getAccessToken();
+    log('_onAuthenticateStarted ${(result as Success).data}');
     return (switch (result) {
       Success(data: final token) when token != null =>
           emit(AuthAuthenticateSuccess(token)),
