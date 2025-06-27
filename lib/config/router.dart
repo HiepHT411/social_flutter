@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:social_flutter/features/auth/bloc/auth_bloc.dart';
-import 'package:social_flutter/features/auth/bloc/auth_state.dart';
 import 'package:social_flutter/screens/login_screen.dart';
+import 'package:social_flutter/screens/register_screen.dart';
 
 class RouteName {
   static const String home = '/';
@@ -50,7 +50,7 @@ final router = GoRouter(
     ),
     GoRoute(
       path: RouteName.register,
-      builder: (context, state) => LoginScreen(),
+      builder: (context, state) => RegisterScreen(),
     ),
   ],
 );

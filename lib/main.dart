@@ -5,8 +5,6 @@ import 'package:social_flutter/config/http_client_config.dart';
 import 'package:social_flutter/config/router.dart';
 import 'package:social_flutter/config/theme.dart';
 import 'package:social_flutter/features/auth/bloc/auth_bloc.dart';
-import 'package:social_flutter/features/auth/bloc/auth_event.dart';
-import 'package:social_flutter/features/auth/bloc/auth_state.dart';
 import 'package:social_flutter/features/auth/data/auth_api_client.dart';
 import 'package:social_flutter/features/auth/data/auth_local_data_source.dart';
 import 'package:social_flutter/features/auth/data/auth_repository.dart';

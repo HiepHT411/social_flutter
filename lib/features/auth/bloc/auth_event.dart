@@ -1,3 +1,5 @@
+part of 'auth_bloc.dart';
+
 abstract class AuthEvent {}
 
 class AuthStarted extends AuthEvent {}
@@ -22,10 +24,12 @@ class AuthLoginPrefilled extends AuthEvent {
 class AuthRegisterStarted extends AuthEvent {
   AuthRegisterStarted({
     required this.username,
+    required this.email,
     required this.password,
   });
 
   final String username;
+  final String email;
   final String password;
 }
 

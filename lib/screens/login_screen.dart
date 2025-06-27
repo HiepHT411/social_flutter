@@ -7,9 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:social_flutter/config/router.dart';
 import 'package:social_flutter/config/theme_ext.dart';
 import 'package:social_flutter/features/auth/bloc/auth_bloc.dart';
-import 'package:social_flutter/features/auth/bloc/auth_event.dart';
 
-import '../features/auth/bloc/auth_state.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,8 +19,9 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final usernameController = TextEditingController(text: '');
-  final passwordController = TextEditingController(text: '');
+  late final _authState = context.read<AuthBloc>().state; // assign value in somewhere in the future
+  late final usernameController = TextEditingController(text: _authState is AuthLoginInitial ?  (_authState).username : '');
+  late final passwordController = TextEditingController(text: _authState is AuthLoginInitial ?  (_authState).password : '');
 
   void _handleLogin(BuildContext context) {
     if (_formKey.currentState!.validate()) {
@@ -141,10 +140,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authState = context.watch<AuthBloc>().state; // alternative for BlocBuilder
+    final authState = context.watch<AuthBloc>().state; // alternative for BlocBuilder, listen to the states
 
     var loginWidget = (switch (authState) {
       AuthAuthenticateUnauthenticated() => _buildInitialLoginWidget(),
+      AuthLoginInitial() => _buildInitialLoginWidget(),
       AuthLoginInProgress() => _buildInProgressLoginWidget(),
       AuthLoginFailure(message: final msg) => _buildFailureLoginWidget(msg),
       AuthLogInSuccess() => Container(),

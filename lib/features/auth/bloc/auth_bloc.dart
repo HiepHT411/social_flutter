@@ -2,9 +2,12 @@ import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_flutter/dto/result_type.dart';
-import 'package:social_flutter/features/auth/bloc/auth_event.dart';
-import 'package:social_flutter/features/auth/bloc/auth_state.dart';
 import 'package:social_flutter/features/auth/data/auth_repository.dart';
+
+// 'part & part of': set this bloc as a kind of lib so we do not need to import all the related class
+// keep auth_bloc as a single interface represent of authentication feature
+part 'auth_event.dart';
+part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(this.authRepository) : super(AuthInitial()) {
@@ -36,8 +39,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  void _onRegisterStarted(AuthRegisterStarted event, Emitter<AuthState> emit) {
+  void _onRegisterStarted(AuthRegisterStarted event, Emitter<AuthState> emit) async {
+    emit(AuthRegisterInProgress());
+    await Future.delayed(const Duration(seconds: 1));
+    log('Auth blog handle AuthRegisterStarted');
+    final result = await authRepository.register(username: event.username, email: event.email, password: event.password);
 
+    return switch(result) {
+      Success() => emit(AuthRegisterSuccess()),
+      Failure() => emit(AuthRegisterFailure(result.message))
+    };
   }
 
   void _onLoginPrefilled(AuthLoginPrefilled event, Emitter<AuthState> emit) async {
