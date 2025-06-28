@@ -1,13 +1,16 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:social_flutter/features/auth/bloc/auth_bloc.dart';
+import 'package:social_flutter/features/post/bloc/post_create_bloc.dart';
 import 'package:social_flutter/screens/home_screen.dart';
 import 'package:social_flutter/screens/login_screen.dart';
+import 'package:social_flutter/screens/post/post_create_screen.dart';
 import 'package:social_flutter/screens/register_screen.dart';
 
 class RouteName {
   static const String home = '/';
   static const String login = '/login';
+  static const String postCreate = '/post-create';
   static const String postDetail = '/post/:id';
   static const String profile = '/profile';
   static const String register = '/register';
@@ -53,6 +56,13 @@ final router = GoRouter(
     GoRoute(
       path: RouteName.register,
       builder: (context, state) => RegisterScreen(),
+    ),
+    GoRoute(
+      path: RouteName.postCreate,
+      builder: (context, state) => BlocProvider.value(
+        value: state.extra as PostCreateBloc,
+        child: PostCreateScreen(),
+      )
     ),
   ],
 );
