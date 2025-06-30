@@ -168,6 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
     return Scaffold(
+      appBar: AppBar(),
         body: SingleChildScrollView(
             child: SingleChildScrollView(
       child: Column(
@@ -178,6 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
             'Login',
             style: context.text.headlineLarge!.copyWith(
                 fontWeight: FontWeight.bold, color: context.color.onSurface),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(
             height: 24,

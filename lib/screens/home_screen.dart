@@ -102,12 +102,14 @@ class _HomeScreenState extends State<HomeScreen> {
               Positioned.fill(  // fill color all the stack
                   child: Container(
                       color: Colors.white70,
-                      child: Row(children:
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children:
                       [
                         Icon(Icons.error, color: context.color.error,),
-                        const SizedBox(width: 8,),
-                        Text(state.errorMessage, style: context.text.headlineMedium!.copyWith(color: context.color.error),),
-                        const SizedBox(width: 8,),
+                        const SizedBox(width: 4,),
+                        Text(state.errorMessage, style: context.text.bodySmall!.copyWith(color: context.color.error),),
+                        const SizedBox(width: 4,),
                         IconButton.filled(onPressed: () {_handlePendingPostRetry(bloc);}, icon: const Icon(Icons.refresh))
                       ]
                       )
@@ -161,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Center(child: Text('Home Screen')),
+          Center(child: Text('Home Screen', style: context.text.bodyLarge!.copyWith(color: context.color.onSurface,))),
           const SizedBox(
             height: 8,
           ),
