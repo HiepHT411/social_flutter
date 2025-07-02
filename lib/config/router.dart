@@ -1,7 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:social_flutter/config/http_client_config.dart';
 import 'package:social_flutter/features/auth/bloc/auth_bloc.dart';
 import 'package:social_flutter/features/post/bloc/post_create_bloc.dart';
+import 'package:social_flutter/features/post/data/post_api_client.dart';
+import 'package:social_flutter/features/post/data/post_repository.dart';
 import 'package:social_flutter/screens/home_screen.dart';
 import 'package:social_flutter/screens/login_screen.dart';
 import 'package:social_flutter/screens/post/post_create_screen.dart';
@@ -37,7 +40,12 @@ final router = GoRouter(
   routes: [
     GoRoute(
       path: RouteName.home,
-      builder: (context, state) => HomeScreen(),
+      builder: (context, state) => RepositoryProvider(
+          create: (context) => PostRepository(
+              postApiClient: PostApiClient(dio),
+          ),
+          child:  HomeScreen()
+          ),
     ),
     GoRoute(
       path: RouteName.login,

@@ -11,7 +11,12 @@ class PostCreateStateInProgress extends PostCreateState {
   PostCreateStateInProgress({required this.title, required this.content});
 }
 
-class PostCreateStateSuccess extends PostCreateState {}
+class PostCreateStateSuccess extends PostCreateState {
+  final String title;
+  final String content;
+
+  PostCreateStateSuccess({required this.title, required this.content});
+}
 
 class PostCreateStateFailure extends PostCreateState {
   final String title;

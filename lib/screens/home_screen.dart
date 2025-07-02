@@ -7,7 +7,11 @@ import 'package:go_router/go_router.dart';
 import 'package:social_flutter/config/router.dart';
 import 'package:social_flutter/config/theme_ext.dart';
 import 'package:social_flutter/features/auth/bloc/auth_bloc.dart';
+import 'package:social_flutter/features/post/bloc/post_bloc.dart';
 import 'package:social_flutter/features/post/bloc/post_create_bloc.dart';
+import 'package:social_flutter/features/post/data/post_repository.dart';
+
+import '../features/post/dtos/post.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,18 +31,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<PostCreateBloc> _postCreateBlocs = [];
 
+  late final PostGetBloc _postGetBloc;
+  // late List<Post> posts = [];
+
+  @override
+  void initState() {
+    loadAllPosts();
+    super.initState();
+  }
+
+  Future loadAllPosts() async {
+    _postGetBloc = PostGetBloc(context.read<PostRepository>());
+    _postGetBloc.add(PostGetEventGetListRequest());
+    log('Sent PostGetEventGetListRequest');
+    // return posts;
+  }
+
   void _handleLogout(BuildContext context) {
     context.read<AuthBloc>().add(AuthLogoutStarted());
   }
 
   void _handPostCreateButton(BuildContext context) {
-    final bloc = PostCreateBloc();
+    final bloc = PostCreateBloc(context.read<PostRepository>());
     _postCreateBlocs.add(bloc);
     bloc.stream.listen((state) {
       if (state is PostCreateStateSuccess || state is PostCreateStateAborted) {
         _postCreateBlocs.remove(bloc);
         bloc.close();
         log('PostCreateBloc at end state, removed');
+        _postGetBloc.add(PostGetEventGetListRequest());
+        log('Sent PostGetEventGetListRequest to reload page');
       }
     });
     context.push(RouteName.postCreate, extra: bloc);
@@ -121,7 +143,55 @@ class _HomeScreenState extends State<HomeScreen> {
     return failurePost;
   }
 
-    @override
+  Widget _buildCreatedPost(PostGetListStateSuccess state) {
+    final posts = state.list;
+
+    if (posts.isEmpty) {
+      return const Center(
+        child: Text(
+          'No posts created yet.',
+          style: TextStyle(fontSize: 16),
+        ),
+      );
+    }
+    final listView = ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemCount: posts.length,
+        separatorBuilder: (context, index) => const SizedBox(height: 12),
+        itemBuilder: (context, index) {
+          final post = posts[index];
+          return Container(
+              margin: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                  color: context.color.surface,
+                  borderRadius: BorderRadius.circular(12)),
+              child: Stack(children: [
+                Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        post.title,
+                        style: context.text.bodyLarge!
+                            .copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      Text(
+                        post.body,
+                        style: context.text.bodyMedium,
+                      )
+                    ])
+              ]));
+        });
+    return SizedBox(
+      height: 400,
+      child: listView,
+    );
+  }
+
+  @override
     Widget build(BuildContext context) {
 
       final pendingPosts = _postCreateBlocs.map((bloc) {
@@ -157,6 +227,17 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
 
+      final createdPosts = BlocProvider.value(
+            value: _postGetBloc,
+            child: BlocBuilder<PostGetBloc, PostGetState>(
+                builder: (context, state) {
+                  log('Receive state $state');
+                  return (state is PostGetListStateSuccess)
+                      ? _buildCreatedPost(state)
+                      : const SizedBox();
+                }
+            ));
+
       Widget homeWidget = Scaffold(
         body: Padding(
       padding: const EdgeInsets.all(24),
@@ -172,6 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
             height: 8,
           ),
           ...pendingPosts,
+          createdPosts,
           FilledButton(
               onPressed: () => _handleLogout(context),
               child: const Text('Logout'))
